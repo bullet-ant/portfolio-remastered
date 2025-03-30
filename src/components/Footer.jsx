@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FooterContainer = styled.footer`
   background-color: var(--text);
@@ -91,12 +91,14 @@ const FooterForm = styled.form`
 `;
 
 const FormInput = styled.input`
+  width: 100%;
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 0.25rem;
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--background);
   font-size: 1rem;
+  box-sizing: border-box;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);
@@ -108,6 +110,7 @@ const FormInput = styled.input`
 `;
 
 const FormTextarea = styled.textarea`
+  width: 100%;
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 0.25rem;
@@ -116,6 +119,7 @@ const FormTextarea = styled.textarea`
   font-size: 1rem;
   min-height: 150px;
   resize: vertical;
+  box-sizing: border-box;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);
@@ -136,6 +140,34 @@ const FormButton = styled(motion.button)`
   font-size: 1rem;
   cursor: pointer;
   align-self: flex-start;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
+const FormFeedback = styled(motion.div)`
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  background-color: ${(props) =>
+    props.$isError ? "rgba(220, 53, 69, 0.2)" : "rgba(40, 167, 69, 0.2)"};
+  color: ${(props) => (props.$isError ? "#dc3545" : "#28a745")};
+  border: 1px solid
+    ${(props) =>
+      props.$isError ? "rgba(220, 53, 69, 0.5)" : "rgba(40, 167, 69, 0.5)"};
+`;
+
+const FormField = styled.div`
+  position: relative;
+`;
+
+const FormError = styled.div`
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
 `;
 
 const FooterBottom = styled.div`
@@ -176,6 +208,94 @@ const FooterLink = styled.a`
 `;
 
 function Footer() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState({
+    show: false,
+    isError: false,
+    message: "",
+  });
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    setFeedback({ show: false, isError: false, message: "" });
+
+    try {
+      const response = await fetch("https://formspree.io/f/xqapdynk", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // Show success message
+        setFeedback({
+          show: true,
+          isError: false,
+          message: "Message sent successfully! I'll get back to you soon.",
+        });
+
+        // Reset form
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setFeedback({
+        show: true,
+        isError: true,
+        message: "Failed to send message. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <FooterContainer id="contact">
       <FooterContent>
@@ -275,27 +395,80 @@ function Footer() {
         </FooterLeft>
 
         <FooterRight>
-          <FooterForm>
-            <FormInput type="text" placeholder="Name" />
-            <FormInput type="email" placeholder="Email" />
-            <FormTextarea placeholder="Your message" />
+          <FooterForm onSubmit={handleSubmit}>
+            <FormField>
+              <FormInput
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              {errors.name && <FormError>{errors.name}</FormError>}
+            </FormField>
+
+            <FormField>
+              <FormInput
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && <FormError>{errors.email}</FormError>}
+            </FormField>
+
+            <FormField>
+              <FormTextarea
+                placeholder="Your message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+              />
+              {errors.message && <FormError>{errors.message}</FormError>}
+            </FormField>
+
             <FormButton
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
               type="submit"
+              disabled={isSubmitting}
             >
-              Send Message
+              {isSubmitting ? "Sending..." : "Send Message"}
             </FormButton>
+
+            <AnimatePresence>
+              {feedback.show && (
+                <FormFeedback
+                  $isError={feedback.isError}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {feedback.message}
+                </FormFeedback>
+              )}
+            </AnimatePresence>
           </FooterForm>
         </FooterRight>
       </FooterContent>
 
       <FooterBottom>
-        <Copyright>&copy; {new Date().getFullYear()} Aman Kumar</Copyright>
+        <Copyright>
+          Vibe coded in {new Date().getFullYear()}
+          {". "}
+          <a
+            href="https://github.com/bullet-ant/portfolio-remastered"
+            style={{ color: "inherit", textDecoration: "underline" }}
+          >
+            Code's on GitHub if you're curious
+          </a>{" "}
+          - feel free to explore, remix, or just judge my indentation.
+        </Copyright>
         <FooterNav>
           <FooterLink href="#work">Work</FooterLink>
+          <FooterLink href="#skills">Skills</FooterLink>
           <FooterLink href="#about">About</FooterLink>
-          <FooterLink href="#privacy">Privacy</FooterLink>
         </FooterNav>
       </FooterBottom>
     </FooterContainer>

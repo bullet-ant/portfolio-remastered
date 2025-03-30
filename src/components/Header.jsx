@@ -28,10 +28,12 @@ const HeaderContent = styled.div`
   padding: 0 1.5rem;
 `;
 
-const Logo = styled(motion.div)`
+const Logo = styled(motion.a)`
   font-weight: 700;
   font-size: 1.5rem;
   cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
 `;
 
 const Nav = styled.nav`
@@ -91,12 +93,19 @@ function Header() {
       transition={{ type: "spring", stiffness: 50 }}
     >
       <HeaderContent>
-        <Logo whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <Logo
+          href="#home"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           Portfolio
         </Logo>
         <Nav>
           <NavLink href="#work" whileHover={{ y: -2 }}>
             Work
+          </NavLink>
+          <NavLink href="#skills" whileHover={{ y: -2 }}>
+            Skills
           </NavLink>
           <NavLink href="#about" whileHover={{ y: -2 }}>
             About

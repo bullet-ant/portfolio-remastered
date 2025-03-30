@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import ProjectSection from "./components/ProjectSection";
 import AboutSection from "./components/AboutSection";
+import SkillsSection from "./components/SkillsSection";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "styled-components";
 import { projectsData } from "./data/projects";
@@ -53,6 +54,13 @@ function App() {
               );
             })}
           </section>
+
+          <SkillsSection
+            backgroundColor={theme.colors.background}
+            textColor={theme.colors.text}
+            accentColor={theme.colors.primary}
+          />
+
           <AboutSection />
         </main>
         <Footer />

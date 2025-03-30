@@ -4,10 +4,25 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 const AboutContainer = styled.section`
-  padding: 8rem 0;
+  padding: 4rem 0;
   background-color: var(--background);
   position: relative;
   overflow: hidden;
+`;
+
+const BackgroundDecoration = styled.div`
+  position: absolute;
+  bottom: -200px;
+  left: -200px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(
+    circle,
+    rgba(52, 152, 219, 0.1) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  z-index: 0;
 `;
 
 const AboutContent = styled.div`
@@ -18,6 +33,8 @@ const AboutContent = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 
   @media (max-width: ${(props) => props.theme.breakpoints.lg}) {
     grid-template-columns: 1fr;
@@ -25,23 +42,71 @@ const AboutContent = styled.div`
   }
 `;
 
+const Highlight = styled.span`
+  color: var(--primary);
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 100%;
+    height: 0.3rem;
+    background-color: var(--primary);
+    opacity: 0.3;
+    border-radius: 4px;
+  }
+`;
+
 const AboutImage = styled(motion.div)`
   position: relative;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 
   &::before {
     content: "";
     position: absolute;
-    top: -10%;
-    left: -10%;
-    width: 120%;
-    height: 120%;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    opacity: 0.1;
+    top: -2%;
+    left: -2%;
+    width: 104%;
+    height: 104%;
+    background: linear-gradient(
+      135deg,
+      var(--primary) 0%,
+      var(--secondary) 100%
+    );
+    opacity: 0.15;
     z-index: -1;
-    border-radius: 50% 30% 60% 40% / 40% 50% 30% 60%;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    animation: morphing 15s ease-in-out infinite;
+  }
+
+  @keyframes morphing {
+    0% {
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    }
+    25% {
+      border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+    }
+    50% {
+      border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+    }
+    75% {
+      border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+    }
+    100% {
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    }
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    border-radius: 1rem;
   }
 
   img {
@@ -49,15 +114,34 @@ const AboutImage = styled(motion.div)`
     height: auto;
     display: block;
     border-radius: 1rem;
+    transition: transform 0.5s ease;
+    object-fit: cover;
+    aspect-ratio: 3/4;
   }
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 70%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  border-radius: 1rem;
 `;
 
 const AboutText = styled.div`
   position: relative;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.lg}) {
+    order: -1;
+  }
 `;
 
-const AboutHeading = styled(motion.h2)`
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+const SectionHeading = styled(motion.h2)`
+  font-size: clamp(2.5rem, 5vw, 3rem);
   margin-bottom: 1.5rem;
 `;
 
@@ -65,40 +149,67 @@ const AboutSubheading = styled(motion.p)`
   font-size: 1.25rem;
   font-weight: 500;
   color: var(--primary);
-  margin-bottom: 1.5rem;
+  margin: 2rem 0 1.5rem;
 `;
 
 const AboutDescription = styled(motion.div)`
   font-size: 1.125rem;
   margin-bottom: 2.5rem;
+  line-height: 1.8;
 
   p {
     margin-bottom: 1.5rem;
   }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
 `;
 
-const SkillsContainer = styled(motion.div)`
-  margin-top: 2rem;
+const AboutStats = styled(motion.div)`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
 `;
 
-const SkillsTitle = styled.h3`
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+const StatItem = styled(motion.div)`
+  text-align: center;
 `;
 
-const SkillsList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-`;
-
-const SkillTag = styled(motion.span)`
-  background-color: rgba(52, 152, 219, 0.1);
+const StatNumber = styled.div`
+  font-size: 2.5rem;
+  font-weight: 700;
   color: var(--primary);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
+  margin-bottom: 0.5rem;
+`;
+
+const StatLabel = styled.div`
   font-size: 0.875rem;
-  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  opacity: 0.8;
+`;
+
+const CtaButton = styled(motion.a)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 14px rgba(52, 152, 219, 0.4);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+  }
 `;
 
 function AboutSection() {
@@ -122,32 +233,23 @@ function AboutSection() {
     show: { opacity: 1, y: 0 },
   };
 
-  const skills = [
-    "UI/UX Design",
-    "React",
-    "JavaScript",
-    "TypeScript",
-    "Node.js",
-    "CSS/SCSS",
-    "Figma",
-    "Responsive Design",
-    "Animation",
-    "RESTful APIs",
-    "Agile Methodology",
-    "Git",
-  ];
-
   return (
     <AboutContainer id="about" ref={ref}>
+      <BackgroundDecoration />
+
       <AboutContent>
         <AboutImage
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.8 }}
           animate={
-            inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }
+            inView ? { opacity: 1, scale: 0.8 } : { opacity: 0, scale: 0.6 }
           }
           transition={{ duration: 0.7 }}
+          whileHover={{
+            boxShadow: "0 25px 50px rgba(0, 0, 0, 0.2)",
+          }}
         >
           <img src="profile.jpeg" alt="Profile portrait" />
+          <ImageOverlay />
         </AboutImage>
 
         <AboutText>
@@ -156,41 +258,78 @@ function AboutSection() {
             initial="hidden"
             animate={inView ? "show" : "hidden"}
           >
-            <AboutHeading variants={item}>About Me</AboutHeading>
+            <SectionHeading variants={item}>
+              About <Highlight>Me</Highlight>
+            </SectionHeading>
+
             <AboutSubheading variants={item}>
-              Full Stack Developer with 4+ Years of Experience
+              Full Stack Developer & DevOps Engineer
             </AboutSubheading>
 
             <AboutDescription variants={item}>
               <p>
-                With a background spanning Full-stack development and
-                specialized DevOps expertise within security-focused teams, I
-                excel in strengthening digital infrastructures and optimizing
-                development workflows. Skilled in tailoring user interfaces,
-                implementing containerization strategies, and automating
-                processes, I am dedicated to driving continuous improvement and
-                excellence across all endeavors.
+                First and foremost, I love programming. I am a passionate Full
+                Stack developer with a strong background in building scalable
+                web applications. Over the years, I've honed my skills in DevOps
+                practices too, that has enabled me to streamline development
+                processes and enhance collaboration between teams.
               </p>
             </AboutDescription>
 
-            {/* <SkillsContainer variants={item}>
-              <SkillsTitle>Skills & Expertise</SkillsTitle>
-              <SkillsList>
-                {skills.map((skill, index) => (
-                  <SkillTag
-                    key={index}
-                    variants={item}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={
-                      inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-                    }
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                  >
-                    {skill}
-                  </SkillTag>
-                ))}
-              </SkillsList>
-            </SkillsContainer> */}
+            <AboutStats variants={item}>
+              <StatItem>
+                <StatNumber>4+</StatNumber>
+                <StatLabel>Years Experience</StatLabel>
+              </StatItem>
+              <StatItem>
+                <StatNumber>8+</StatNumber>
+                <StatLabel>Projects</StatLabel>
+              </StatItem>
+              <StatItem>
+                <StatNumber>4+</StatNumber>
+                <StatLabel>Tech Stack</StatLabel>
+              </StatItem>
+            </AboutStats>
+
+            <CtaButton
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              variants={item}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Download Resume
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M7 10L12 15L17 10"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 15V3"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </CtaButton>
           </motion.div>
         </AboutText>
       </AboutContent>
