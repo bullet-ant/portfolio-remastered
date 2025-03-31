@@ -289,12 +289,12 @@ function SkillsSection({ backgroundColor, textColor, accentColor }) {
       <BackgroundDecoration $accentColor={accentColor} />
 
       <FloatingElement
-        $position="top: 15%; right: 15%;"
+        $position="top: 18%; right: 15%;"
         $size={180}
         $color={accentColor}
       />
       <FloatingElement
-        $position="top: 0%; left: 8%;"
+        $position="top: 6%; left: 6%;"
         $size={220}
         $color={accentColor}
       />
