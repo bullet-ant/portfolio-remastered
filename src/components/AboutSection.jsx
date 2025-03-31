@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 const AboutContainer = styled.section`
-  padding: 4rem 0;
+  padding: 8rem 0;
   background-color: var(--background);
   position: relative;
   overflow: hidden;

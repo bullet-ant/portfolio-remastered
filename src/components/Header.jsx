@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const HeaderContainer = styled(motion.header)`
   position: fixed;
@@ -61,14 +61,72 @@ const MenuButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+  z-index: 110; // Ensure it's above the mobile menu
 
   @media (max-width: ${(props) => props.theme.breakpoints.md}) {
     display: block;
   }
 `;
 
+const MobileMenu = styled(motion.div)`
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(248, 248, 248, 0.95);
+  backdrop-filter: blur(15px);
+  z-index: 105;
+  padding-top: 4.5rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: ${(props) => props.theme.breakpoints.md}) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const Backdrop = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 104;
+`;
+
+const MobileNav = styled.nav`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  background-color: rgba(248, 248, 248, 0.95);
+`;
+
+const MobileNavLink = styled(motion.a)`
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  width: 100%;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+
+  &:hover {
+    color: var(--primary);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+`;
+
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,6 +142,26 @@ function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleNavLinkClick = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <HeaderContainer
@@ -114,38 +192,128 @@ function Header() {
             Contact
           </NavLink>
         </Nav>
-        <MenuButton aria-label="Menu">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M3 12H21"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M3 6H21"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M3 18H21"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <MenuButton
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          onClick={toggleMenu}
+        >
+          {isMenuOpen ? (
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M6 6L18 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 12H21"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M3 6H21"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M3 18H21"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </MenuButton>
       </HeaderContent>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <Backdrop
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+            />
+            <MobileMenu
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MobileNav>
+                <MobileNavLink
+                  href="#home"
+                  onClick={handleNavLinkClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Home
+                </MobileNavLink>
+                <MobileNavLink
+                  href="#work"
+                  onClick={handleNavLinkClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Work
+                </MobileNavLink>
+                <MobileNavLink
+                  href="#skills"
+                  onClick={handleNavLinkClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Skills
+                </MobileNavLink>
+                <MobileNavLink
+                  href="#about"
+                  onClick={handleNavLinkClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  About
+                </MobileNavLink>
+                <MobileNavLink
+                  href="#contact"
+                  onClick={handleNavLinkClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Contact
+                </MobileNavLink>
+              </MobileNav>
+            </MobileMenu>
+          </>
+        )}
+      </AnimatePresence>
     </HeaderContainer>
   );
 }
