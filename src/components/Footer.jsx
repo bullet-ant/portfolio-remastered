@@ -189,6 +189,7 @@ const Copyright = styled.p`
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
+  text-align: center;
 `;
 
 const FooterNav = styled.nav`
@@ -455,15 +456,16 @@ function Footer() {
 
       <FooterBottom>
         <Copyright>
-          Vibe coded in {new Date().getFullYear()}
-          {". "}
+          Copyleft &copy; {new Date().getFullYear()} Aman Kumar.
+          <br />
+          This project is{" "}
           <a
             href="https://github.com/bullet-ant/portfolio-remastered"
             style={{ color: "inherit", textDecoration: "underline" }}
           >
-            Code's on GitHub if you're curious
-          </a>{" "}
-          - feel free to explore, remix, or just judge my indentation.
+            open-source
+          </a>
+          .
         </Copyright>
         <FooterNav>
           <FooterLink href="#work">Work</FooterLink>
