@@ -154,7 +154,7 @@ const AboutSubheading = styled(motion.p)`
 
 const AboutDescription = styled(motion.div)`
   font-size: 1.125rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   line-height: 1.8;
 
   p {
@@ -170,7 +170,7 @@ const AboutStats = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1.5rem;
-  margin-top: 2.5rem;
+  margin-bottom: 1rem;
 `;
 
 const StatItem = styled(motion.div)`
@@ -268,11 +268,13 @@ function AboutSection() {
 
             <AboutDescription variants={item}>
               <p>
-                First and foremost, I love programming. I am a passionate Full
-                Stack developer with a strong background in building scalable
-                web applications. Over the years, I've honed my skills in DevOps
-                practices too, that has enabled me to streamline development
-                processes and enhance collaboration between teams.
+                First and foremost, I love programming! Ever since I discovered
+                the immense power of technology, I've been channeling that
+                passion into creating meaningful solutions. As a passionate
+                full-stack developer, I specialize in building scalable web
+                applications that solve real-world problems. I'm constantly
+                exploring emerging technologies to expand my toolkit and push
+                the boundaries of what's possible!
               </p>
             </AboutDescription>
 
