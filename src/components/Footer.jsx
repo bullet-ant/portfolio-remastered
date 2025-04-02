@@ -189,7 +189,11 @@ const Copyright = styled.p`
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
-  text-align: center;
+  text-align: left;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.md}) {
+    text-align: center;
+  }
 `;
 
 const FooterNav = styled.nav`
@@ -458,12 +462,14 @@ function Footer() {
         <Copyright>
           Copyleft &copy; {new Date().getFullYear()} Aman Kumar.
           <br />
-          This project is{" "}
+          This website is{" "}
           <a
             href="https://github.com/bullet-ant/portfolio-remastered"
             style={{ color: "inherit", textDecoration: "underline" }}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            open-source
+            100% open-source
           </a>
           .
         </Copyright>
