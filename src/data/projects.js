@@ -30,7 +30,7 @@ export const projectsData = [
     title: "Ratri Dark - Chrome Theme",
     category: "Chrome Extension",
     description:
-      "A sleek and minimalist dark theme for Chromium-based browsers with 125+ active users. Designed to reduce eye strain and enhance focus, this theme wraps your browser in a smooth, visually soothing aesthetic.",
+      "A sleek and minimalist dark theme for Chromium-based browsers with 200+ active users. Designed to reduce eye strain and enhance focus, this theme wraps your browser in a smooth, visually soothing aesthetic.",
     techStack: ["Chrome API", "CSS"],
     link: "https://chromewebstore.google.com/detail/ratri-dark/hhfgogbdhbmkpljebomfloglibidbcdg",
     images: [
